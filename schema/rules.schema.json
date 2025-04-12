@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "Mailsweep Rules",
+  "description": "Rules schema for the Mailsweep tool that cleans up your Outlook inbox",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "action"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Descriptive name for the rule"
+      },
+      "sender_contains": {
+        "type": "array",
+        "description": "List of strings to match against the email sender (case-insensitive). If both sender_contains and subject_contains are present, message must match at least one pattern from each.",
+        "items": { "type": "string" }
+      },
+      "subject_contains": {
+        "type": "array",
+        "description": "List of strings to match against the email subject (case-insensitive). If both sender_contains and subject_contains are present, message must match at least one pattern from each.",
+        "items": { "type": "string" }
+      },
+      "action": {
+        "type": "string",
+        "description": "Action to perform when a rule matches",
+        "enum": ["archive", "delete", "mark_read"]
+      }
+    }
+  }
+}
