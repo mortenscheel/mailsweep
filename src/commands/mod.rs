@@ -1,10 +1,10 @@
 mod auth;
-mod rules;
 mod clean;
+mod rules;
 
 pub use auth::AuthCommand;
-pub use rules::RulesCommand;
 pub use clean::CleanCommand;
+pub use rules::RulesCommand;
 
 use clap::Subcommand;
 
@@ -12,10 +12,10 @@ use clap::Subcommand;
 pub enum Commands {
     /// Manage authentication with Microsoft Graph API
     Auth(AuthCommand),
-    
+
     /// Manage rules for email processing
     Rules(RulesCommand),
-    
+
     /// Clean inbox based on configured rules
     Clean(CleanCommand),
 }

@@ -1,7 +1,4 @@
-use oauth2::{
-    AuthUrl, ClientId, DeviceAuthorizationUrl, TokenUrl,
-    basic::BasicClient,
-};
+use oauth2::{AuthUrl, ClientId, DeviceAuthorizationUrl, TokenUrl, basic::BasicClient};
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 
@@ -9,7 +6,8 @@ pub async fn debug_auth() -> Result<(), Box<dyn std::error::Error>> {
     let client_id = "0cadb66e-6914-4a9f-8058-3ba6e5cb58d8";
     let auth_url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize".to_string();
     let token_url = "https://login.microsoftonline.com/common/oauth2/v2.0/token".to_string();
-    let device_auth_url = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode".to_string();
+    let device_auth_url =
+        "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode".to_string();
 
     println!("Debug: Creating client with:");
     println!("Debug: - Client ID: {}", client_id);
@@ -21,7 +19,7 @@ pub async fn debug_auth() -> Result<(), Box<dyn std::error::Error>> {
         ClientId::new(client_id.to_string()),
         None,
         AuthUrl::new(auth_url)?,
-        Some(TokenUrl::new(token_url)?)
+        Some(TokenUrl::new(token_url)?),
     )
     .set_device_authorization_url(DeviceAuthorizationUrl::new(device_auth_url)?);
 
