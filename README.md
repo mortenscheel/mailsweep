@@ -15,7 +15,7 @@ A command-line tool for cleaning up your Outlook/Microsoft 365 inbox using custo
 
 ### Download pre-built binaries
 
-The easiest way to install Mailsweep is to download the pre-built binaries from the [latest release](https://github.com/user/mailsweep/releases/latest) page.
+The easiest way to install Mailsweep is to download the pre-built binaries from the [latest release](https://github.com/mortenscheel/mailsweep/releases/latest) page.
 
 Choose the appropriate binary for your platform:
 - Windows: `mailsweep-windows-amd64.exe`
@@ -34,7 +34,7 @@ If you prefer to build from source, you'll need Rust installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/user/mailsweep.git
+git clone https://github.com/mortenscheel/mailsweep.git
 cd mailsweep
 
 # Build and install
