@@ -1,7 +1,7 @@
 use anyhow::Result;
+use std::env;
 use std::fs;
 use std::path::PathBuf;
-use std::env;
 
 /// Get the application config directory path
 pub fn get_app_config_dir() -> Result<PathBuf> {
@@ -15,7 +15,10 @@ pub fn get_app_config_dir() -> Result<PathBuf> {
                 let home = env::var("USERPROFILE").map_err(|_| {
                     anyhow::anyhow!("Could not find user profile directory on Windows")
                 })?;
-                PathBuf::from(home).join("AppData").join("Roaming").join("mailsweep")
+                PathBuf::from(home)
+                    .join("AppData")
+                    .join("Roaming")
+                    .join("mailsweep")
             }
         }
     } else {
@@ -26,7 +29,7 @@ pub fn get_app_config_dir() -> Result<PathBuf> {
                 .map_err(|e| anyhow::anyhow!("Failed to initialize XDG base directories: {}", e))?;
             xdg_dirs.get_config_home()
         }
-        
+
         #[cfg(target_os = "windows")]
         {
             // This code is never reached but needed for compilation on Windows
@@ -59,13 +62,13 @@ pub fn get_config_file_path_str(filename: &str) -> Result<String> {
 /// Place a config file and ensure its parent directory exists
 pub fn place_config_file(filename: &str) -> Result<PathBuf> {
     let path = get_config_file_path(filename)?;
-    
+
     // Ensure the parent directory exists
     if let Some(parent) = path.parent() {
         if !parent.exists() {
             fs::create_dir_all(parent)?;
         }
     }
-    
+
     Ok(path)
 }
