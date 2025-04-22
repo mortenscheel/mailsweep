@@ -125,8 +125,9 @@ impl CleanCommand {
         for msg in &messages {
             // Get a nice human-readable action name with emoji
             let action_str = match msg.action.as_ref().unwrap() {
-                RuleAction::Archive => "📥 Archive",
-                RuleAction::Delete => "🗑️ Delete",
+                // Use fixed-width emojis with proper spacing
+                RuleAction::Archive => "📥 Archive ",
+                RuleAction::Delete => "🗑️ Delete  ",
                 RuleAction::MarkRead => "👁️ Mark Read",
             };
 
@@ -200,7 +201,8 @@ impl CleanCommand {
         // Create table borders with appropriate width
         let header_border = "-".repeat(term_width);
 
-        // Print header with proper spacing and alignment - ensure proper formatting
+        // Print header with proper spacing and alignment
+        println!("{}", header_border);
         println!(
             "\x1b[1;34m{:<action_width$}\x1b[0m   \x1b[1;32m{:<sender_width$}\x1b[0m   \x1b[1;33m{:<subject_width$}\x1b[0m   \x1b[1;31m{:<received_width$}\x1b[0m",
             "Action", "Sender", "Subject", "Received"
@@ -209,6 +211,44 @@ impl CleanCommand {
 
         // Display each message in a more controlled format
         for msg in &table_data {
+            // Strip ANSI escape codes for width calculation
+            // Use regex pattern to match ANSI escape sequences
+            let mut action_visible = String::new();
+            let mut in_escape = false;
+            
+            for c in msg.action.chars() {
+                if c == '\x1b' {
+                    in_escape = true;
+                    continue;
+                }
+                
+                if in_escape {
+                    if c == 'm' {
+                        in_escape = false;
+                    }
+                    continue;
+                }
+                
+                action_visible.push(c);
+            }
+            
+            // Account for emoji width (each emoji typically counts as 2 char width)
+            // Calculate padded action string
+            let mut action_padded = msg.action.clone();
+            
+            // Count emojis (simplistic approach - just counts emoji-like characters)
+            let emoji_count = action_visible.chars()
+                .filter(|&c| ('\u{1F300}'..='\u{1F6FF}').contains(&c) || ('\u{2600}'..='\u{26FF}').contains(&c))
+                .count();
+                
+            // Adjust visible length to account for emoji width (each emoji is 1 char but often displays as 2 width)
+            let visible_len = action_visible.chars().count() + emoji_count;
+            
+            let action_display_padding = action_width.saturating_sub(visible_len);
+            if action_display_padding > 0 {
+                action_padded.push_str(&" ".repeat(action_display_padding));
+            }
+
             // Truncate sender if needed
             let sender_display = if msg.sender.len() > sender_width {
                 format!("{}...", &msg.sender[0..(sender_width - 3)])
@@ -226,10 +266,10 @@ impl CleanCommand {
             // Format received to fixed width
             let received_display = format!("{:<received_width$}", msg.received);
 
-            // Print the row with proper spacing
+            // Print the row with fixed-width separators
             println!(
-                "{:<action_width$}   {}   {}   {}",
-                msg.action, sender_display, subject_display, received_display
+                "{}   {}   {}   {}",
+                action_padded, sender_display, subject_display, received_display
             );
         }
 
