@@ -14,9 +14,12 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-on-failure: true
+          shared-key: "ci-${{ runner.os }}"
       - name: Run tests
         run: cargo test
 
@@ -24,11 +27,14 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-on-failure: true
+          shared-key: "ci-${{ runner.os }}"
       - name: Check formatting
         run: cargo fmt --all -- --check
       - name: Run clippy

@@ -33,7 +33,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Install cross
         if: matrix.use_cross == true
@@ -45,6 +45,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+      
+      - uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-on-failure: true
+          key: build-${{ matrix.target }}
           
       - name: Build binary (using cargo)
         if: matrix.use_cross != true
@@ -80,9 +85,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-upload
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false # Reduces token permissions
           
       - name: Generate Changelog
         id: changelog
