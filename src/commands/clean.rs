@@ -215,35 +215,39 @@ impl CleanCommand {
             // Use regex pattern to match ANSI escape sequences
             let mut action_visible = String::new();
             let mut in_escape = false;
-            
+
             for c in msg.action.chars() {
                 if c == '\x1b' {
                     in_escape = true;
                     continue;
                 }
-                
+
                 if in_escape {
                     if c == 'm' {
                         in_escape = false;
                     }
                     continue;
                 }
-                
+
                 action_visible.push(c);
             }
-            
+
             // Account for emoji width (each emoji typically counts as 2 char width)
             // Calculate padded action string
             let mut action_padded = msg.action.clone();
-            
+
             // Count emojis (simplistic approach - just counts emoji-like characters)
-            let emoji_count = action_visible.chars()
-                .filter(|&c| ('\u{1F300}'..='\u{1F6FF}').contains(&c) || ('\u{2600}'..='\u{26FF}').contains(&c))
+            let emoji_count = action_visible
+                .chars()
+                .filter(|&c| {
+                    ('\u{1F300}'..='\u{1F6FF}').contains(&c)
+                        || ('\u{2600}'..='\u{26FF}').contains(&c)
+                })
                 .count();
-                
+
             // Adjust visible length to account for emoji width (each emoji is 1 char but often displays as 2 width)
             let visible_len = action_visible.chars().count() + emoji_count;
-            
+
             let action_display_padding = action_width.saturating_sub(visible_len);
             if action_display_padding > 0 {
                 action_padded.push_str(&" ".repeat(action_display_padding));

@@ -33,5 +33,6 @@ async fn main() -> anyhow::Result<()> {
         Commands::Auth(cmd) => cmd.execute().await,
         Commands::Rules(cmd) => cmd.execute().await,
         Commands::Clean(cmd) => cmd.execute().await,
+        Commands::Completions(cmd) => cmd.execute(),
     }
 }

@@ -120,6 +120,40 @@ mailsweep auth status
 mailsweep auth logout
 ```
 
+### Shell Completions
+
+Mailsweep supports generating shell completions for various shells:
+
+```bash
+# Generate completions for your shell
+mailsweep completions <shell>
+
+# Available shells: bash, zsh, fish, posh, elvish
+
+# Examples:
+# Generate bash completions
+mailsweep completions bash > ~/.bash_completion.d/mailsweep
+
+# Generate zsh completions
+mailsweep completions zsh > ~/.zsh_completions/_mailsweep
+
+# Generate fish completions
+mailsweep completions fish > ~/.config/fish/completions/mailsweep.fish
+
+# Generate PowerShell completions
+mailsweep completions posh > mailsweep.ps1
+
+# Optional: output to file directly using --output flag
+mailsweep completions bash --output ~/.bash_completion.d/mailsweep
+```
+
+For shell-specific installation instructions:
+
+- **Bash**: Place in `~/.bash_completion.d/` and ensure it's sourced in your `.bashrc`
+- **Zsh**: Place in a directory in your `$fpath` (like `~/.zsh_completions/`) and ensure completions are initialized
+- **Fish**: Place in `~/.config/fish/completions/`
+- **PowerShell**: Source the file in your profile
+
 ### Rules Management
 
 ```bash

@@ -1,9 +1,11 @@
 mod auth;
 mod clean;
+mod completions;
 mod rules;
 
 pub use auth::AuthCommand;
 pub use clean::CleanCommand;
+pub use completions::CompletionsCommand;
 pub use rules::RulesCommand;
 
 use clap::Subcommand;
@@ -18,4 +20,7 @@ pub enum Commands {
 
     /// Clean inbox based on configured rules
     Clean(CleanCommand),
+
+    /// Generate shell completions
+    Completions(CompletionsCommand),
 }
