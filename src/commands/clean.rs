@@ -257,7 +257,7 @@ impl CleanCommand {
             let sender_chars = msg.sender.chars().count();
             let sender_display = if sender_chars > sender_width {
                 let mut shortened_sender = String::new();
-                
+
                 for (i, c) in msg.sender.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= sender_width - 3 {
@@ -274,7 +274,7 @@ impl CleanCommand {
             let subject_chars = msg.subject.chars().count();
             let subject_display = if subject_chars > subject_width {
                 let mut shortened_subject = String::new();
-                
+
                 for (i, c) in msg.subject.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= subject_width - 3 {
@@ -291,7 +291,7 @@ impl CleanCommand {
             let received_chars = msg.received.chars().count();
             let received_display = if received_chars > received_width {
                 let mut shortened_received = String::new();
-                
+
                 for (i, c) in msg.received.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= received_width - 3 {
