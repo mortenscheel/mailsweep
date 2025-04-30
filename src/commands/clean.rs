@@ -253,22 +253,56 @@ impl CleanCommand {
                 action_padded.push_str(&" ".repeat(action_display_padding));
             }
 
-            // Truncate sender if needed
-            let sender_display = if msg.sender.len() > sender_width {
-                format!("{}...", &msg.sender[0..(sender_width - 3)])
+            // Calculate display width for sender
+            let sender_chars = msg.sender.chars().count();
+            let sender_display = if sender_chars > sender_width {
+                let mut shortened_sender = String::new();
+                
+                for (i, c) in msg.sender.chars().enumerate() {
+                    // Leave space for the ellipsis (3 chars)
+                    if i >= sender_width - 3 {
+                        break;
+                    }
+                    shortened_sender.push(c);
+                }
+                format!("{}...", shortened_sender)
             } else {
                 format!("{:<sender_width$}", msg.sender)
             };
 
-            // Truncate subject if needed
-            let subject_display = if msg.subject.len() > subject_width {
-                format!("{}...", &msg.subject[0..(subject_width - 3)])
+            // Calculate display width for subject
+            let subject_chars = msg.subject.chars().count();
+            let subject_display = if subject_chars > subject_width {
+                let mut shortened_subject = String::new();
+                
+                for (i, c) in msg.subject.chars().enumerate() {
+                    // Leave space for the ellipsis (3 chars)
+                    if i >= subject_width - 3 {
+                        break;
+                    }
+                    shortened_subject.push(c);
+                }
+                format!("{}...", shortened_subject)
             } else {
                 format!("{:<subject_width$}", msg.subject)
             };
 
-            // Format received to fixed width
-            let received_display = format!("{:<received_width$}", msg.received);
+            // Calculate display width for received
+            let received_chars = msg.received.chars().count();
+            let received_display = if received_chars > received_width {
+                let mut shortened_received = String::new();
+                
+                for (i, c) in msg.received.chars().enumerate() {
+                    // Leave space for the ellipsis (3 chars)
+                    if i >= received_width - 3 {
+                        break;
+                    }
+                    shortened_received.push(c);
+                }
+                format!("{}...", shortened_received)
+            } else {
+                format!("{:<received_width$}", msg.received)
+            };
 
             // Print the row with fixed-width separators
             println!(
