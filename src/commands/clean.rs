@@ -116,10 +116,19 @@ impl CleanCommand {
             return Ok(());
         }
 
-        // Sort messages by received date (newest first)
-        messages.sort_by(|a, b| b.received_date.cmp(&a.received_date));
+        // First sort messages by rule name for grouping
+        messages.sort_by(|a, b| {
+            // First compare by rule name
+            let rule_cmp = a.matched_rule.cmp(&b.matched_rule);
+            // If rules are the same, then sort by received date (newest first)
+            if rule_cmp.is_eq() {
+                b.received_date.cmp(&a.received_date)
+            } else {
+                rule_cmp
+            }
+        });
 
-        // Create table for display
+        // Create table data
         let mut table_data = Vec::new();
 
         for msg in &messages {
@@ -209,14 +218,34 @@ impl CleanCommand {
         );
         println!("{}", header_border);
 
-        // Display each message in a more controlled format
-        for msg in &table_data {
+        // Track the current rule group to know when to print a group header
+        let mut current_rule: Option<&str> = None;
+
+        // Loop through messages to display them grouped by rule
+        for (i, msg) in messages.iter().enumerate() {
+            // Check if we're starting a new rule group
+            let rule_name = msg.matched_rule.as_ref().unwrap();
+
+            // If this is a new rule group or the first message
+            if current_rule.is_none() || current_rule != Some(rule_name) {
+                // Print the rule group header centered
+                let rule_display = format!(" {} ", rule_name);
+                let padding = term_width.saturating_sub(rule_display.len()) / 2;
+                let centered_header = format!("{}{}{}", "·".repeat(padding), rule_display, "·".repeat(padding));
+                println!("\x1b[1;36m{}\x1b[0m", centered_header);
+
+                // Update current rule
+                current_rule = Some(rule_name);
+            }
+
+            // Get the corresponding table data row
+            let table_row = &table_data[i];
+
             // Strip ANSI escape codes for width calculation
-            // Use regex pattern to match ANSI escape sequences
             let mut action_visible = String::new();
             let mut in_escape = false;
 
-            for c in msg.action.chars() {
+            for c in table_row.action.chars() {
                 if c == '\x1b' {
                     in_escape = true;
                     continue;
@@ -234,7 +263,7 @@ impl CleanCommand {
 
             // Account for emoji width (each emoji typically counts as 2 char width)
             // Calculate padded action string
-            let mut action_padded = msg.action.clone();
+            let mut action_padded = table_row.action.clone();
 
             // Count emojis (simplistic approach - just counts emoji-like characters)
             let emoji_count = action_visible
@@ -254,11 +283,11 @@ impl CleanCommand {
             }
 
             // Calculate display width for sender
-            let sender_chars = msg.sender.chars().count();
+            let sender_chars = table_row.sender.chars().count();
             let sender_display = if sender_chars > sender_width {
                 let mut shortened_sender = String::new();
 
-                for (i, c) in msg.sender.chars().enumerate() {
+                for (i, c) in table_row.sender.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= sender_width - 3 {
                         break;
@@ -267,15 +296,15 @@ impl CleanCommand {
                 }
                 format!("{}...", shortened_sender)
             } else {
-                format!("{:<sender_width$}", msg.sender)
+                format!("{:<sender_width$}", table_row.sender)
             };
 
             // Calculate display width for subject
-            let subject_chars = msg.subject.chars().count();
+            let subject_chars = table_row.subject.chars().count();
             let subject_display = if subject_chars > subject_width {
                 let mut shortened_subject = String::new();
 
-                for (i, c) in msg.subject.chars().enumerate() {
+                for (i, c) in table_row.subject.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= subject_width - 3 {
                         break;
@@ -284,15 +313,15 @@ impl CleanCommand {
                 }
                 format!("{}...", shortened_subject)
             } else {
-                format!("{:<subject_width$}", msg.subject)
+                format!("{:<subject_width$}", table_row.subject)
             };
 
             // Calculate display width for received
-            let received_chars = msg.received.chars().count();
+            let received_chars = table_row.received.chars().count();
             let received_display = if received_chars > received_width {
                 let mut shortened_received = String::new();
 
-                for (i, c) in msg.received.chars().enumerate() {
+                for (i, c) in table_row.received.chars().enumerate() {
                     // Leave space for the ellipsis (3 chars)
                     if i >= received_width - 3 {
                         break;
@@ -301,7 +330,7 @@ impl CleanCommand {
                 }
                 format!("{}...", shortened_received)
             } else {
-                format!("{:<received_width$}", msg.received)
+                format!("{:<received_width$}", table_row.received)
             };
 
             // Print the row with fixed-width separators
