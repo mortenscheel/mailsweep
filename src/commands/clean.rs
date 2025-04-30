@@ -231,7 +231,12 @@ impl CleanCommand {
                 // Print the rule group header centered
                 let rule_display = format!(" {} ", rule_name);
                 let padding = term_width.saturating_sub(rule_display.len()) / 2;
-                let centered_header = format!("{}{}{}", "·".repeat(padding), rule_display, "·".repeat(padding));
+                let centered_header = format!(
+                    "{}{}{}",
+                    "·".repeat(padding),
+                    rule_display,
+                    "·".repeat(padding)
+                );
                 println!("\x1b[1;36m{}\x1b[0m", centered_header);
 
                 // Update current rule
